@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Contact inquiries use a shared validation schema and a public POST server function with insert-only anonymous database access; inquiries are reviewed in Lovable Cloud, never exposed to visitors.
+- The contact INSERT policy must validate field lengths and email format consistently with existing constraints rather than use an unconditional predicate, preserving public inquiries without unrestricted writes.
