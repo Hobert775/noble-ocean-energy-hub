@@ -15,6 +15,13 @@
       "when": 1792513999401,
       "tag": "0001_restrict_contact_submission_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792514182108,
+      "tag": "0002_validate_contact_submission_insert_policy",
+      "breakpoints": true
     }
   ]
 }
