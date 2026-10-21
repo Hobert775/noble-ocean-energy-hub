@@ -114,6 +114,21 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    if (document.getElementById("tawk-script")) return;
+    const w = window as unknown as { Tawk_API?: object; Tawk_LoadStart?: Date };
+    w.Tawk_API = w.Tawk_API || {};
+    w.Tawk_LoadStart = new Date();
+    const s = document.createElement("script");
+    s.id = "tawk-script";
+    s.async = true;
+    s.src = "https://embed.tawk.to/6ad8c1aedf381434b6e11de2/1k5fb94n1";
+    s.charset = "UTF-8";
+    s.setAttribute("crossorigin", "*");
+    document.body.appendChild(s);
+  }, []);
+
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
