@@ -29,6 +29,13 @@
       "when": 1792651729107,
       "tag": "0003_create_profiles_and_user_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792651737953,
+      "tag": "0004_create_account_activity",
+      "breakpoints": true
     }
   ]
 }

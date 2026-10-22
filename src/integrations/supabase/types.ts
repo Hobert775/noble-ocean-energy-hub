@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_activity: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          detail: string
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: string
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: string
+          id?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
