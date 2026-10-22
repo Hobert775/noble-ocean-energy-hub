@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   createUserAccount,
@@ -35,7 +35,7 @@ function AdminPage() {
   const fetchActivity = useServerFn(listAccountActivity);
 
   // Confirm the signed-in user actually holds the admin role before showing data.
-  useState(() => {
+  useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) {
         navigate({ to: "/auth", replace: true });
