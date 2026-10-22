@@ -28,7 +28,7 @@ function Ops() {
         ))}
       </section>
       <section className="mx-auto max-w-7xl px-6 py-16 text-center">
-        <Link to="/contact" className="font-semibold text-primary underline decoration-accent decoration-2 underline-offset-8">View the full global fleet →</Link>
+        <Link to="/contact" className="font-semibold text-primary underline decoration-accent decoration-2 underline-offset-8">Get in touch →</Link>
       </section>
     </>
   );
