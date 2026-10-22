@@ -48,7 +48,7 @@ function AdminPage() {
         .eq("user_id", data.user.id);
       setIsAdmin((roleRows ?? []).some((r) => r.role === "admin"));
     });
-  });
+  }, [navigate]);
 
   const usersQuery = useQuery({
     queryKey: ["admin-users"],
