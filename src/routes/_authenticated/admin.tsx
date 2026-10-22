@@ -186,8 +186,10 @@ function CreateAccountCard({ onCreated }: { onCreated: () => void }) {
     }
     setBusy(true);
     try {
-      await createFn({ data: parsed.data });
-      setNotice(`Account created for ${parsed.data.email}.`);
+      await createFn({ data: { ...parsed.data, origin: window.location.origin } });
+      setNotice(
+        `Account created for ${parsed.data.email}. They must click the confirmation link in their email before signing in.`,
+      );
       setForm({ email: "", password: "", fullName: "", jobTitle: "", department: "", role: "employee" });
       onCreated();
     } catch (err) {
@@ -204,7 +206,7 @@ function CreateAccountCard({ onCreated }: { onCreated: () => void }) {
     <div className="mt-8 rounded-lg border border-border p-6">
       <h2 className="font-display text-2xl text-foreground">Create an account</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        New accounts can sign in immediately with the password you set.
+        The new person gets a confirmation email, then signs in with the password you set.
       </p>
       <form onSubmit={handleSubmit} className="mt-6 grid gap-4 md:grid-cols-2">
         <div>
@@ -262,7 +264,7 @@ function UserRow({
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [resetLink, setResetLink] = useState<string | null>(null);
+  const [resetSent, setResetSent] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState({
     fullName: user.fullName,
@@ -334,8 +336,10 @@ function UserRow({
               disabled={busy}
               onClick={() =>
                 run(async () => {
-                  const res = await resetFn({ data: { userId: user.id } });
-                  setResetLink(res.recoveryLink);
+                  await resetFn({
+                    data: { userId: user.id, email: user.email, origin: window.location.origin },
+                  });
+                  setResetSent(true);
                 })
               }
               className={btnCls}
@@ -347,10 +351,9 @@ function UserRow({
             </button>
           </div>
           {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
-          {resetLink && (
-            <p className="mt-2 max-w-xs break-all text-xs text-muted-foreground">
-              Share this one-time reset link with the user:{" "}
-              <a href={resetLink} className="underline">{resetLink}</a>
+          {resetSent && (
+            <p className="mt-2 max-w-xs text-xs text-muted-foreground">
+              A password reset link was emailed to {user.email}.
             </p>
           )}
         </td>

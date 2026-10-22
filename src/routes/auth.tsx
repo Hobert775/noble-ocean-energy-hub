@@ -66,10 +66,26 @@ function AuthPage() {
     }
     // Wait until the session is readable before entering the gated area,
     // otherwise the gate can bounce us back here on a slow storage write.
+    let userId: string | null = null;
     for (let i = 0; i < 30; i++) {
       const { data } = await supabase.auth.getSession();
-      if (data.session) break;
+      if (data.session) {
+        userId = data.session.user.id;
+        break;
+      }
       await new Promise((r) => setTimeout(r, 100));
+    }
+    if (userId) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("status")
+        .eq("id", userId)
+        .maybeSingle();
+      if (profile?.status === "deactivated") {
+        await supabase.auth.signOut();
+        setError("This account has been deactivated. Contact your administrator.");
+        return;
+      }
     }
     navigate({ to: "/admin" });
   }

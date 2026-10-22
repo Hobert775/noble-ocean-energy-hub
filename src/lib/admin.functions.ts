@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
 import {
@@ -11,6 +11,9 @@ import {
   type AccountStatus,
   type AppRole,
 } from "./admin-rules";
+
+// Admin features run entirely as the signed-in admin (database rules + admin-only
+// SQL functions), so they work on any host without the backend's secret key.
 
 type AdminContext = {
   supabase: SupabaseClient<Database>;
@@ -26,18 +29,44 @@ async function requireAdmin(context: AdminContext) {
 }
 
 async function logActivity(
-  actorId: string,
+  context: AdminContext,
   targetUserId: string | null,
   action: string,
   detail: string,
 ) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  await supabaseAdmin.from("account_activity").insert({
-    actor_id: actorId,
+  await context.supabase.from("account_activity").insert({
+    actor_id: context.userId,
     target_user_id: targetUserId,
     action,
     detail,
   });
+}
+
+/** A fresh, session-less public client — used for sign-up and reset emails. */
+function publicAuthClient() {
+  const url = process.env["SUPABASE_URL"];
+  const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+  if (!url || !key) throw new Error("Backend connection is not configured on this host.");
+  return createClient<Database>(url, key, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const h = new Headers(init?.headers);
+        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) {
+          h.delete("Authorization");
+        }
+        h.set("apikey", key);
+        return fetch(input, { ...init, headers: h });
+      },
+    },
+  });
+}
+
+function parseOrigin(value: unknown): string {
+  if (typeof value !== "string") throw new Error("Invalid origin");
+  const url = new URL(value);
+  if (url.protocol !== "https:" && url.protocol !== "http:") throw new Error("Invalid origin");
+  return url.origin;
 }
 
 export type AdminUserRow = {
@@ -56,13 +85,11 @@ export const listAdminUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AdminUserRow[]> => {
     await requireAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const [{ data: usersData, error: usersError }, { data: profiles }, { data: roles }] =
+    const [{ data: users, error: usersError }, { data: profiles }, { data: roles }] =
       await Promise.all([
-        supabaseAdmin.auth.admin.listUsers({ perPage: 1000 }),
-        supabaseAdmin.from("profiles").select("id, full_name, job_title, department, status"),
-        supabaseAdmin.from("user_roles").select("user_id, role"),
+        context.supabase.rpc("admin_list_users"),
+        context.supabase.from("profiles").select("id, full_name, job_title, department, status"),
+        context.supabase.from("user_roles").select("user_id, role"),
       ]);
     if (usersError) throw new Error("Could not load users");
 
@@ -74,7 +101,7 @@ export const listAdminUsers = createServerFn({ method: "POST" })
       rolesById.set(r.user_id, list);
     }
 
-    return usersData.users.map((u) => {
+    return (users ?? []).map((u) => {
       const p = profileById.get(u.id);
       const status = ACCOUNT_STATUSES.includes(p?.status as AccountStatus)
         ? (p?.status as AccountStatus)
@@ -95,26 +122,37 @@ export const listAdminUsers = createServerFn({ method: "POST" })
 
 export const createUserAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => createUserSchema.parse(input))
+  .inputValidator((input: unknown) => {
+    const { origin, ...rest } = (input ?? {}) as Record<string, unknown>;
+    return { ...createUserSchema.parse(rest), origin: parseOrigin(origin) };
+  })
   .handler(async ({ data, context }) => {
     await requireAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
+    const { data: created, error } = await publicAuthClient().auth.signUp({
       email: data.email,
       password: data.password,
-      email_confirm: true,
-      user_metadata: { full_name: data.fullName },
+      options: {
+        emailRedirectTo: data.origin,
+        data: { full_name: data.fullName },
+      },
     });
-    if (error || !created.user) throw new Error(error?.message ?? "Could not create account");
+    if (error) throw new Error(error.message);
+    // An existing email comes back as a placeholder user with no identities.
+    if (!created.user || (created.user.identities ?? []).length === 0) {
+      throw new Error("An account with this email already exists.");
+    }
 
     const userId = created.user.id;
-    await supabaseAdmin
+    await context.supabase
       .from("profiles")
       .update({ job_title: data.jobTitle, department: data.department })
       .eq("id", userId);
-    await supabaseAdmin.from("user_roles").insert({ user_id: userId, role: data.role });
-    await logActivity(context.userId, userId, "account_created", `${data.email} (${data.role})`);
+    const { error: roleError } = await context.supabase
+      .from("user_roles")
+      .insert({ user_id: userId, role: data.role });
+    if (roleError) throw new Error("Account created, but the role could not be assigned.");
+    await logActivity(context, userId, "account_created", `${data.email} (${data.role})`);
 
     return { id: userId };
   });
@@ -130,25 +168,20 @@ export const setUserRole = createServerFn({ method: "POST" })
     if (!canManageTarget(context.userId, data.userId)) {
       throw new Error("You cannot change your own role");
     }
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
     if (data.assign) {
-      await supabaseAdmin
+      const { error } = await context.supabase
         .from("user_roles")
-        .upsert({ user_id: data.userId, role: data.role }, { onConflict: "user_id,role" });
+        .upsert({ user_id: data.userId, role: data.role }, { onConflict: "user_id,role", ignoreDuplicates: true });
+      if (error) throw new Error("Could not assign the role");
     } else {
-      await supabaseAdmin
+      const { error } = await context.supabase
         .from("user_roles")
         .delete()
         .eq("user_id", data.userId)
         .eq("role", data.role);
+      if (error) throw new Error("Could not remove the role");
     }
-    await logActivity(
-      context.userId,
-      data.userId,
-      data.assign ? "role_assigned" : "role_removed",
-      data.role,
-    );
+    await logActivity(context, data.userId, data.assign ? "role_assigned" : "role_removed", data.role);
     return { ok: true };
   });
 
@@ -163,18 +196,13 @@ export const setUserStatus = createServerFn({ method: "POST" })
     if (!canManageTarget(context.userId, data.userId)) {
       throw new Error("You cannot deactivate your own account");
     }
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    await supabaseAdmin
-      .from("profiles")
-      .update({ status: data.status, updated_at: new Date().toISOString() })
-      .eq("id", data.userId);
-    // Banning blocks sign-in; "none" lifts the ban.
-    await supabaseAdmin.auth.admin.updateUserById(data.userId, {
-      ban_duration: data.status === "deactivated" ? "876000h" : "none",
+    const { error } = await context.supabase.rpc("admin_set_user_status", {
+      _user_id: data.userId,
+      _status: data.status,
     });
+    if (error) throw new Error("Could not change the account status");
     await logActivity(
-      context.userId,
+      context,
       data.userId,
       data.status === "deactivated" ? "account_deactivated" : "account_activated",
       "",
@@ -184,25 +212,23 @@ export const setUserStatus = createServerFn({ method: "POST" })
 
 export const resetUserPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { userId: string }) => input)
+  .inputValidator((input: { userId: string; email: string; origin: string }) => ({
+    userId: input.userId,
+    email: String(input.email).trim(),
+    origin: parseOrigin(input.origin),
+  }))
   .handler(async ({ data, context }) => {
     await requireAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: users } = await context.supabase.rpc("admin_list_users");
+    const target = (users ?? []).find((u) => u.id === data.userId);
+    if (!target?.email || target.email !== data.email) throw new Error("User not found");
 
-    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(
-      data.userId,
-    );
-    if (userError || !userData.user?.email) throw new Error("User not found");
-
-    const { data: linkData, error } = await supabaseAdmin.auth.admin.generateLink({
-      type: "recovery",
-      email: userData.user.email,
+    const { error } = await publicAuthClient().auth.resetPasswordForEmail(target.email, {
+      redirectTo: `${data.origin}/reset-password`,
     });
-    if (error || !linkData.properties?.action_link) {
-      throw new Error("Could not generate a reset link");
-    }
-    await logActivity(context.userId, data.userId, "password_reset_generated", userData.user.email);
-    return { recoveryLink: linkData.properties.action_link };
+    if (error) throw new Error(error.message);
+    await logActivity(context, data.userId, "password_reset_sent", target.email);
+    return { ok: true };
   });
 
 export const updateUserProfile = createServerFn({ method: "POST" })
@@ -213,9 +239,7 @@ export const updateUserProfile = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }) => {
     await requireAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const { error } = await supabaseAdmin
+    const { error } = await context.supabase
       .from("profiles")
       .update({
         full_name: data.fullName,
@@ -225,7 +249,7 @@ export const updateUserProfile = createServerFn({ method: "POST" })
       })
       .eq("id", data.userId);
     if (error) throw new Error("Could not update profile");
-    await logActivity(context.userId, data.userId, "profile_updated", data.fullName);
+    await logActivity(context, data.userId, "profile_updated", data.fullName);
     return { ok: true };
   });
 
@@ -242,15 +266,12 @@ export const listAccountActivity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<ActivityRow[]> => {
     await requireAdmin(context);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await context.supabase
       .from("account_activity")
       .select("id, actor_id, target_user_id, action, detail, created_at")
       .order("created_at", { ascending: false })
       .limit(100);
     if (error) throw new Error("Could not load activity");
-
     return (data ?? []).map((row) => ({
       id: row.id,
       actorId: row.actor_id,
