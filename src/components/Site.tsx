@@ -12,6 +12,25 @@ const nav = [
 ] as const;
 
 export function Header() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setSignedIn(Boolean(data.user)));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(Boolean(session?.user));
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-primary-foreground/10 bg-primary text-primary-foreground">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -19,12 +38,26 @@ export function Header() {
           <span className="font-display text-2xl font-semibold">Noble</span>
           <span className="text-xs tracking-[0.2em] text-accent">CORPORATION PLC</span>
         </Link>
-        <nav className="hidden gap-8 text-sm md:flex">
+        <nav className="hidden items-center gap-8 text-sm md:flex">
           {nav.map((n) => (
             <Link key={n.to} to={n.to} className="opacity-80 hover:opacity-100" activeProps={{ className: "text-accent opacity-100" }}>
               {n.label}
             </Link>
           ))}
+          {signedIn ? (
+            <>
+              <Link to="/admin" className="opacity-80 hover:opacity-100" activeProps={{ className: "text-accent opacity-100" }}>
+                Admin
+              </Link>
+              <button type="button" onClick={handleSignOut} className="opacity-80 hover:opacity-100">
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link to="/auth" className="opacity-80 hover:opacity-100" activeProps={{ className: "text-accent opacity-100" }}>
+              Sign in
+            </Link>
+          )}
         </nav>
       </div>
       <nav className="flex gap-5 overflow-x-auto px-6 pb-3 text-sm md:hidden">
