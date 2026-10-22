@@ -50,7 +50,7 @@ function Investors() {
           <ul className="mt-6 space-y-4">
             <li><a className="underline decoration-accent underline-offset-4" href="https://noblecorp.com/our-investors/" target="_blank" rel="noreferrer">Investor information</a></li>
             <li><a className="underline decoration-accent underline-offset-4" href="https://www.sec.gov/edgar/browse/?CIK=1895262&owner=exclude" target="_blank" rel="noreferrer">SEC filings</a></li>
-            <li>Ian Macpherson, VP Investor Relations — <a className="underline decoration-accent underline-offset-4" href="mailto:imacpherson@noblecorp.com">imacpherson@noblecorp.com</a></li>
+            <li>General inquiries — <a className="underline decoration-accent underline-offset-4" href="mailto:noblecoperationplc@noblecorporationplc.info">noblecoperationplc@noblecorporationplc.info</a></li>
           </ul>
           <p className="mt-8 text-sm opacity-70">Dividends may change at the board's discretion. Contract backlog is not cash earned and does not guarantee future profit.</p>
         </div>
