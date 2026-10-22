@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 import {
   APP_ROLES,
   ACCOUNT_STATUSES,
@@ -11,12 +13,7 @@ import {
 } from "./admin-rules";
 
 type AdminContext = {
-  supabase: {
-    rpc: (
-      fn: string,
-      args: Record<string, unknown>,
-    ) => Promise<{ data: unknown; error: unknown }>;
-  };
+  supabase: SupabaseClient<Database>;
   userId: string;
 };
 

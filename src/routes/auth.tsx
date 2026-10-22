@@ -37,6 +37,13 @@ function AuthPage() {
       setError(signInError.message);
       return;
     }
+    // Wait until the session is readable before entering the gated area,
+    // otherwise the gate can bounce us back here on a slow storage write.
+    for (let i = 0; i < 30; i++) {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) break;
+      await new Promise((r) => setTimeout(r, 100));
+    }
     navigate({ to: "/admin" });
   }
 
