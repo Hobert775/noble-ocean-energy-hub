@@ -90,71 +90,58 @@ function AuthPage() {
     setNotice("If that email is registered, a password reset link is on its way.");
   }
 
+  const title = mode === "signin" ? "Sign in" : mode === "signup" ? "Create an account" : "Reset your password";
+  const submitLabel = mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send reset link";
+  const onSubmit = mode === "signin" ? handleSignIn : mode === "signup" ? handleSignUp : handleForgot;
+  const inputCls = "mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground";
+  function switchTo(m: "signin" | "forgot" | "signup") {
+    setMode(m);
+    setError(null);
+    setNotice(null);
+  }
+
   return (
     <section className="bg-background">
       <div className="mx-auto flex max-w-md flex-col px-6 py-24">
         <p className="eyebrow">Staff portal</p>
-        <h1 className="mt-3 font-display text-4xl text-foreground">
-          {mode === "signin" ? "Sign in" : "Reset your password"}
-        </h1>
+        <h1 className="mt-3 font-display text-4xl text-foreground">{title}</h1>
 
-        <form
-          onSubmit={mode === "signin" ? handleSignIn : handleForgot}
-          className="mt-8 space-y-5"
-        >
-          <div>
-            <label htmlFor="email" className="text-sm font-medium text-foreground">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
-            />
-          </div>
-
-          {mode === "signin" && (
+        <form onSubmit={onSubmit} className="mt-8 space-y-5">
+          {mode === "signup" && (
             <div>
-              <label htmlFor="password" className="text-sm font-medium text-foreground">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
-              />
+              <label htmlFor="fullName" className="text-sm font-medium text-foreground">Full name</label>
+              <input id="fullName" required maxLength={100} value={fullName} onChange={(e) => setFullName(e.target.value)} className={inputCls} />
+            </div>
+          )}
+          <div>
+            <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
+            <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputCls} />
+          </div>
+          {mode !== "forgot" && (
+            <div>
+              <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
+              <input id="password" type="password" required minLength={mode === "signup" ? 8 : undefined} value={password} onChange={(e) => setPassword(e.target.value)} className={inputCls} />
             </div>
           )}
 
           {error && <p className="text-sm text-destructive">{error}</p>}
           {notice && <p className="text-sm text-foreground">{notice}</p>}
 
-          <button
-            type="submit"
-            disabled={busy}
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
-          >
-            {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Send reset link"}
+          <button type="submit" disabled={busy} className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60">
+            {busy ? "Please wait…" : submitLabel}
           </button>
         </form>
 
-        <button
-          type="button"
-          onClick={() => {
-            setMode(mode === "signin" ? "forgot" : "signin");
-            setError(null);
-            setNotice(null);
-          }}
-          className="mt-4 text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
-        >
-          {mode === "signin" ? "Forgot your password?" : "Back to sign in"}
-        </button>
+        <div className="mt-4 flex flex-col items-start gap-2 text-sm text-muted-foreground">
+          {mode === "signin" ? (
+            <>
+              <button type="button" onClick={() => switchTo("forgot")} className="underline underline-offset-4 hover:text-foreground">Forgot your password?</button>
+              <button type="button" onClick={() => switchTo("signup")} className="underline underline-offset-4 hover:text-foreground">No account? Sign up</button>
+            </>
+          ) : (
+            <button type="button" onClick={() => switchTo("signin")} className="underline underline-offset-4 hover:text-foreground">Back to sign in</button>
+          )}
+        </div>
       </div>
     </section>
   );
