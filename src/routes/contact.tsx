@@ -102,7 +102,7 @@ function Contact() {
           <div key={t} className="rounded border border-border bg-card p-8">
             <p className="eyebrow">{t}</p>
             {href ? (
-              <p className="mt-4 break-words text-lg">
+              <p className="mt-4 break-all text-base leading-relaxed">
                 <a className="underline decoration-accent underline-offset-4" href={href}>{b}</a>
               </p>
             ) : (
