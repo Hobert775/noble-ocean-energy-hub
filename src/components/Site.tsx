@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,7 @@ export function Header() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [signedIn, setSignedIn] = useState(false);
+  const onHome = useLocation({ select: (s) => s.pathname === "/" });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setSignedIn(Boolean(data.user)));
@@ -53,7 +54,7 @@ export function Header() {
                 Sign out
               </button>
             </>
-          ) : (
+          ) : onHome ? null : (
             <Link to="/auth" className="opacity-80 hover:opacity-100" activeProps={{ className: "text-accent opacity-100" }}>
               Sign in
             </Link>
