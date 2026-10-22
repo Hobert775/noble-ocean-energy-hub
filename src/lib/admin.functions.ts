@@ -210,7 +210,7 @@ export const resetUserPassword = createServerFn({ method: "POST" })
 
 export const updateUserProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { userId: string } & z.infer<typeof profileUpdateSchema>) => {
+  .inputValidator((input: { userId: string; fullName: string; jobTitle: string; department: string }) => {
     const parsed = profileUpdateSchema.parse(input);
     return { userId: input.userId, ...parsed };
   })
