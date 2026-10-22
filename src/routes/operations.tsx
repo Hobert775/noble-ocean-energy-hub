@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { meta, PageHero } from "@/components/Site";
 
 export const Route = createFileRoute("/operations")({
@@ -28,7 +28,7 @@ function Ops() {
         ))}
       </section>
       <section className="mx-auto max-w-7xl px-6 py-16 text-center">
-        <a href="https://noblecorp.com/our-fleet/" target="_blank" rel="noreferrer" className="font-semibold text-primary underline decoration-accent decoration-2 underline-offset-8">View the full global fleet →</a>
+        <Link to="/contact" className="font-semibold text-primary underline decoration-accent decoration-2 underline-offset-8">View the full global fleet →</Link>
       </section>
     </>
   );
