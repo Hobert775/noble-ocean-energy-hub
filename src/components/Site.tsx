@@ -33,7 +33,11 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-primary-foreground/10 bg-primary text-primary-foreground">
+    <>
+      <div className="bg-accent px-6 py-1.5 text-center text-xs font-semibold tracking-wide text-accent-foreground">
+        Independent informational website — not affiliated with or endorsed by Noble Corporation plc
+      </div>
+      <header className="sticky top-0 z-50 border-b border-primary-foreground/10 bg-primary text-primary-foreground">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-baseline gap-2">
           <span className="font-display text-2xl font-semibold">Noble</span>
@@ -68,7 +72,8 @@ export function Header() {
           </Link>
         ))}
       </nav>
-    </header>
+      </header>
+    </>
   );
 }
 
@@ -78,19 +83,19 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-3">
         <div>
           <p className="font-display text-2xl">Noble Corporation plc</p>
-          <p className="mt-3 text-sm opacity-70">Offshore drilling excellence since 1921. NYSE: NE.</p>
+          <p className="mt-3 text-sm opacity-70">An independent overview of one of the world's longest-standing offshore drilling contractors, founded 1921.</p>
         </div>
         <div className="text-sm opacity-80">
-          <p className="eyebrow mb-3">Principal Executive Office</p>
-          2101 CityWest Boulevard, Suite 600<br />Houston, Texas 77042, USA
+          <p className="eyebrow mb-3">About this website</p>
+          Independent informational site. Not affiliated with, sponsored by, or endorsed by Noble Corporation plc.
         </div>
         <div className="text-sm opacity-80">
-          <p className="eyebrow mb-3">Registered</p>
-          England and Wales · Company No. 12958050
+          <p className="eyebrow mb-3">Official matters</p>
+          For investor, career or media inquiries, use Noble's official website and published contact points.
         </div>
       </div>
       <div className="border-t border-primary-foreground/10 py-5 text-center text-xs opacity-60">
-        © {new Date().getFullYear()} Noble Corporation plc. All rights reserved.
+        © {new Date().getFullYear()} · Independent informational website · Company figures shown are drawn from public reporting.
       </div>
     </footer>
   );
