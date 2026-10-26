@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import crew from "@/assets/crew.jpg";
 import { meta, PageHero } from "@/components/Site";
 
 export const Route = createFileRoute("/careers")({
@@ -21,7 +22,8 @@ function Careers() {
         Requirements vary by role. Offshore positions may require qualifications, industry certifications, safety training and rig experience. This site does not recruit — apply only through Noble's official careers channels.
       </PageHero>
       <section className="mx-auto max-w-4xl px-6 py-20">
-        <h2 className="text-3xl text-primary">Where you could work</h2>
+        <img src={crew} alt="Offshore rig crew reviewing plans on deck" loading="lazy" width={1280} height={896} className="rounded" />
+        <h2 className="mt-14 text-3xl text-primary">Where you could work</h2>
         <ul className="mt-8 divide-y divide-border border-y border-border">
           {roles.map((r) => (
             <li key={r} className="flex items-center gap-4 py-5 text-lg"><span className="h-2 w-2 rounded-full bg-accent" />{r}</li>

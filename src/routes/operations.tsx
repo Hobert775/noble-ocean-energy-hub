@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import rigNight from "@/assets/rig-night.jpg";
+import fleet from "@/assets/fleet.jpg";
 import { meta, PageHero } from "@/components/Site";
 
 export const Route = createFileRoute("/operations")({
@@ -27,7 +29,21 @@ function Ops() {
           </div>
         ))}
       </section>
-      <section className="mx-auto max-w-7xl px-6 py-16 text-center">
+      <section className="mx-auto max-w-7xl px-6 py-20">
+        <p className="eyebrow">The fleet</p>
+        <h2 className="mt-4 text-3xl text-primary">Floaters and jack-ups</h2>
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          <figure>
+            <img src={rigNight} alt="Drillship illuminated at night" loading="lazy" width={1280} height={896} className="rounded" />
+            <figcaption className="mt-3 text-sm text-muted-foreground">Drillships and semi-submersibles handle deepwater and ultra-deepwater wells, holding position over the wellhead with dynamic positioning systems.</figcaption>
+          </figure>
+          <figure>
+            <img src={fleet} alt="Jack-up rig standing on legs in shallow water" loading="lazy" width={1280} height={896} className="rounded" />
+            <figcaption className="mt-3 text-sm text-muted-foreground">Jack-up rigs stand on legs lowered to the seabed, providing a stable drilling platform in shallower waters.</figcaption>
+          </figure>
+        </div>
+      </section>
+      <section className="mx-auto max-w-7xl px-6 pb-16 text-center">
         <Link to="/contact" className="font-semibold text-primary underline decoration-accent decoration-2 underline-offset-8">Get in touch →</Link>
       </section>
     </>
