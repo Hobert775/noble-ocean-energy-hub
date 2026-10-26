@@ -16,7 +16,7 @@ function Ops() {
   return (
     <>
       <PageHero eyebrow="What we do" title="Offshore drilling services for energy companies.">
-        Our business is driven by contract awards, day rates, rig utilization and operators' investment in offshore projects.
+        The business is driven by contract awards, day rates, rig utilization and operators' investment in offshore projects.
       </PageHero>
       <section className="mx-auto grid max-w-7xl gap-px bg-border px-0 md:grid-cols-3">
         {services.map(([n, t, d]) => (

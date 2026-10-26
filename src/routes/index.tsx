@@ -46,9 +46,9 @@ function Index() {
       <section className="mx-auto grid max-w-7xl items-center gap-14 px-6 py-24 md:grid-cols-2">
         <img src={jackup} alt="Noble jack-up rig" loading="lazy" width={1280} height={896} className="rounded" />
         <div>
-          <p className="eyebrow">Who we are</p>
+          <p className="eyebrow">The company</p>
           <h2 className="mt-4 text-4xl text-primary">An international energy-services company</h2>
-          <p className="mt-5 text-muted-foreground">We operate large offshore drilling rigs used to explore for and develop oil and gas reserves beneath the seabed — supplying equipment, skilled crews and technical expertise under contract to operators worldwide.</p>
+          <p className="mt-5 text-muted-foreground">Noble operates large offshore drilling rigs used to explore for and develop oil and gas reserves beneath the seabed — supplying equipment, skilled crews and technical expertise under contract to operators worldwide.</p>
           <Link to="/about" className="mt-8 inline-block font-semibold text-primary underline decoration-accent decoration-2 underline-offset-8">About Noble →</Link>
         </div>
       </section>
