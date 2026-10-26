@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import rigNight from "@/assets/rig-night.jpg";
 import { meta, PageHero } from "@/components/Site";
 
 export const Route = createFileRoute("/about")({
@@ -27,6 +28,9 @@ function About() {
       <PageHero eyebrow="Company profile" title="More than a century offshore.">
         Noble's history dates to 1921. This page is an independent profile compiled from public reporting — it is not the company's official website.
       </PageHero>
+      <section className="mx-auto max-w-7xl px-6 pt-20">
+        <img src={rigNight} alt="Drillship illuminated at night on calm waters" loading="lazy" width={1280} height={896} className="w-full rounded" />
+      </section>
       <section className="mx-auto max-w-7xl px-6 py-20">
         <h2 className="text-3xl text-primary">At a glance</h2>
         <dl className="mt-8 grid border-t border-border md:grid-cols-2">
