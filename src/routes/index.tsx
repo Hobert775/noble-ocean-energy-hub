@@ -9,10 +9,10 @@ export const Route = createFileRoute("/")({
 });
 
 const stats = [
-  ["1921", "Established"],
-  ["$6.8B", "Contract backlog"],
-  ["NYSE: NE", "Publicly traded"],
-  ["Houston", "Headquarters"],
+  ["1921", "Founded"],
+  ["$6.8B", "Reported contract backlog"],
+  ["100+ yrs", "Offshore experience"],
+  ["Global", "Fleet operations"],
 ];
 
 function Index() {
@@ -22,9 +22,9 @@ function Index() {
         <img src={hero} alt="Noble drillship at dusk" width={1920} height={1088} className="absolute inset-0 h-full w-full object-cover" />
         <div className="bg-hero-overlay absolute inset-0" />
         <div className="relative mx-auto flex min-h-[80vh] max-w-7xl flex-col justify-center px-6">
-          <p className="eyebrow">Offshore drilling since 1921</p>
+          <p className="eyebrow">An independent overview · Offshore drilling since 1921</p>
           <h1 className="mt-5 max-w-3xl text-5xl leading-[1.05] md:text-7xl">Drilling deeper, safely, across the world's oceans.</h1>
-          <p className="mt-6 max-w-xl text-lg opacity-85">Noble provides deepwater, ultra-deepwater and jack-up drilling services to leading oil and gas operators.</p>
+          <p className="mt-6 max-w-xl text-lg opacity-85">Noble provides deepwater, ultra-deepwater and jack-up drilling services to leading oil and gas operators. This site is an independent profile of the company, built from public reporting.</p>
           <div className="mt-10 flex gap-4">
             <Link to="/operations" className="rounded bg-accent px-6 py-3 font-semibold text-accent-foreground hover:opacity-90">Our operations</Link>
             <Link to="/investors" className="rounded border border-primary-foreground/40 px-6 py-3 font-semibold hover:bg-primary-foreground/10">Investors</Link>

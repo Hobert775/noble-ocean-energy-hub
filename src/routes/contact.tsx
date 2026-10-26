@@ -17,9 +17,9 @@ export const Route = createFileRoute("/contact")({
 const CONTACT_EMAIL = "noblecoperationplc@noblecorporationplc.info";
 
 const cards: [string, string, string?][] = [
-  ["Principal executive office", "2101 CityWest Boulevard, Suite 600\nHouston, Texas 77042, USA"],
+  ["About this site", "An independent informational website about Noble Corporation plc.\nNot the company's official website."],
   ["Email", CONTACT_EMAIL, `mailto:${CONTACT_EMAIL}`],
-  ["UK registration", "Noble Corporation plc\nCompany No. 12958050 · Incorporated Oct 16, 2020"],
+  ["Official matters", "For investor, career or media inquiries, please use Noble Corporation plc's official website and published contact points."],
 ];
 
 function Contact() {

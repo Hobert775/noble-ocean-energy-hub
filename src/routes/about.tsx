@@ -2,32 +2,33 @@ import { createFileRoute } from "@tanstack/react-router";
 import { meta, PageHero } from "@/components/Site";
 
 export const Route = createFileRoute("/about")({
-  head: () => meta("Company & Leadership — Noble Corporation plc", "Company profile, history and leadership of Noble Corporation plc."),
+  head: () => meta("About — Noble Corporation plc Overview", "An independent profile of Noble Corporation plc: history, business and public record."),
   component: About,
 });
 
 const profile = [
-  ["Official name", "Noble Corporation plc"],
+  ["Company", "Noble Corporation plc"],
   ["Industry", "Offshore oil and gas drilling"],
-  ["Established", "1921"],
-  ["Incorporation", "England and Wales (2020)"],
-  ["Exchange", "New York Stock Exchange — NE"],
-  ["Principal office", "2101 CityWest Blvd, Suite 600, Houston, TX 77042"],
+  ["Founded", "1921"],
+  ["Listed", "New York Stock Exchange (ticker: NE)"],
+  ["Principal office", "Houston, Texas, USA"],
+  ["Business", "Contract drilling services for energy operators"],
 ];
 
-const leaders = [
-  ["Robert W. Eifler", "President and Chief Executive Officer", "Leads the company's executive management and business strategy."],
-  ["Jeffrey A. Miller", "Chairman of the Board", "Appointed chairman in May 2026. Also president and CEO of Halliburton."],
+const milestones = [
+  ["1921", "Founded", "The company's roots in the drilling business date back more than a century."],
+  ["Deepwater era", "Fleet expansion", "Grew into deepwater and ultra-deepwater drilling with drillships and semi-submersibles."],
+  ["Today", "Global contractor", "Operates one of the industry's established fleets of floaters and jack-up rigs worldwide."],
 ];
 
 function About() {
   return (
     <>
-      <PageHero eyebrow="Our company" title="More than a century offshore.">
-        Noble's history dates to 1921. Today's public company, Noble Corporation plc, was incorporated in England and Wales in 2020 and is owned by its shareholders.
+      <PageHero eyebrow="Company profile" title="More than a century offshore.">
+        Noble's history dates to 1921. This page is an independent profile compiled from public reporting — it is not the company's official website.
       </PageHero>
       <section className="mx-auto max-w-7xl px-6 py-20">
-        <h2 className="text-3xl text-primary">Company profile</h2>
+        <h2 className="text-3xl text-primary">At a glance</h2>
         <dl className="mt-8 grid border-t border-border md:grid-cols-2">
           {profile.map(([k, v]) => (
             <div key={k} className="border-b border-border py-5 md:pr-10">
@@ -39,16 +40,19 @@ function About() {
       </section>
       <section className="bg-secondary">
         <div className="mx-auto max-w-7xl px-6 py-20">
-          <p className="eyebrow">Leadership</p>
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {leaders.map(([n, r, d]) => (
-              <div key={n} className="rounded border-t-4 border-accent bg-card p-8">
-                <h3 className="text-2xl text-primary">{n}</h3>
-                <p className="mt-1 font-semibold">{r}</p>
+          <p className="eyebrow">Milestones</p>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {milestones.map(([era, t, d]) => (
+              <div key={t} className="rounded border-t-4 border-accent bg-card p-8">
+                <p className="text-sm font-semibold text-muted-foreground">{era}</p>
+                <h3 className="mt-2 text-2xl text-primary">{t}</h3>
                 <p className="mt-4 text-muted-foreground">{d}</p>
               </div>
             ))}
           </div>
+          <p className="mt-10 max-w-2xl text-sm text-muted-foreground">
+            For official company information, leadership and governance details, refer to Noble Corporation plc's official website and regulatory filings.
+          </p>
         </div>
       </section>
     </>

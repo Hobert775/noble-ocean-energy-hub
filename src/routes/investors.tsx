@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { meta, PageHero } from "@/components/Site";
 
 export const Route = createFileRoute("/investors")({
-  head: () => meta("Investors — Noble Corporation plc (NYSE: NE)", "Second quarter 2026 results, dividend and investor resources for Noble Corporation plc."),
+  head: () => meta("Public Results — Noble Corporation plc (NYSE: NE)", "An independent summary of Noble Corporation plc's publicly reported second quarter 2026 results."),
   component: Investors,
 });
 
@@ -24,7 +24,9 @@ const details = [
 function Investors() {
   return (
     <>
-      <PageHero eyebrow="NYSE: NE" title="Investor relations">Second quarter 2026 results, three months ended June 30, 2026. All figures in US dollars.</PageHero>
+      <PageHero eyebrow="Public reporting" title="Reported results at a glance">
+        An independent summary of Noble Corporation plc's publicly reported second quarter 2026 results, three months ended June 30, 2026. All figures in US dollars.
+      </PageHero>
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-20 md:grid-cols-4">
         {kpis.map(([v, l, n]) => (
           <div key={l} className="rounded border border-border bg-card p-6">
@@ -46,11 +48,12 @@ function Investors() {
           </dl>
         </div>
         <div className="rounded bg-primary p-10 text-primary-foreground">
-          <p className="eyebrow">Resources</p>
-          <ul className="mt-6 space-y-4">
-            <li><a className="underline decoration-accent underline-offset-4" href="https://www.sec.gov/edgar/browse/?CIK=1895262&owner=exclude" target="_blank" rel="noreferrer">SEC filings</a></li>
-            <li><Link className="underline decoration-accent underline-offset-4" to="/contact">Send an inquiry</Link></li>
-            <li>General inquiries — <a className="underline decoration-accent underline-offset-4" href="mailto:noblecoperationplc@noblecorporationplc.info">noblecoperationplc@noblecorporationplc.info</a></li>
+          <p className="eyebrow">Before you rely on these figures</p>
+          <ul className="mt-6 space-y-4 text-sm leading-relaxed">
+            <li>This site is independent and is not Noble Corporation plc's investor relations page.</li>
+            <li>Figures are summarised from public reporting and may be simplified or out of date.</li>
+            <li>For investment decisions, use the company's official filings and investor relations materials.</li>
+            <li><Link className="underline decoration-accent underline-offset-4" to="/contact">Questions about this site? Get in touch</Link></li>
           </ul>
           <p className="mt-8 text-sm opacity-70">Dividends may change at the board's discretion. Contract backlog is not cash earned and does not guarantee future profit.</p>
         </div>

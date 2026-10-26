@@ -18,7 +18,7 @@ function Careers() {
   return (
     <>
       <PageHero eyebrow="Careers" title="Build your career offshore and onshore.">
-        Requirements vary by role. Offshore positions may require qualifications, industry certifications, safety training and rig experience.
+        Requirements vary by role. Offshore positions may require qualifications, industry certifications, safety training and rig experience. This site does not recruit — apply only through Noble's official careers channels.
       </PageHero>
       <section className="mx-auto max-w-4xl px-6 py-20">
         <h2 className="text-3xl text-primary">Where you could work</h2>
